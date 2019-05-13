@@ -1,18 +1,3 @@
-# from logging import Formatter, getLogger, StreamHandler, DEBUG
-# import logging
-#
-# logger = getLogger('logtest')
-# logger.setLevel(DEBUG)
-#
-# stream_handler = StreamHandler()
-# stream_handler.setLevel(DEBUG)
-# handler_format = Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# stream_handler.setFormatter(handler_format)
-#
-# logger.addHandler(stream_handler)
-#
-# logger.debug('あ')
-
 from logging import Formatter, getLogger, StreamHandler, DEBUG, handlers
 
 class Logger:
