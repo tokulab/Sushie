@@ -1,7 +1,9 @@
 import sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from PIL import Image
 from logger import Logger
 
 class Webdriver():
@@ -28,7 +30,6 @@ class Webdriver():
         from time import sleep
         sleep(sec)
 
-
     def get_element(self, type, query):
         type_dic = {
             'id': By.ID,
@@ -39,15 +40,34 @@ class Webdriver():
         element = self.driver.find_element(type_dic[type], query)
         return element
 
-    def click_point(self, x, y, click_mode='right'):
-        self.action.move_by_offset(x, y)
-        print(x, y)
-        self.action.click()
+    def click_point(self, x, y, element=None, click_mode='right'):
+        if not element:
+            self.action.move_by_offset(x, y)
+            self.action.click()
+        else:
+            self.action.move_to_element_with_offset(to_element=element,xoffset=x, yoffset=y)
+            self.action.click()
         self.action.perform()
+        self.log.info('clicked x:{}, y:{}'.format(x, y))
+
+    def push_key(self, key, element, word=None, delay_mode=False):
+        keys_dic = {
+            'enter': Keys.ENTER,
+            'space': Keys.SPACE,
+            'string': str(word),
+        }
+        self.action.send_keys(keys_dic[key])
+        self.action.perform()
+        self.log.info('pushed {} key.'.format(key if word==None else word))
+
+    def screen_shot(self, element, crop=True):
+        if crop:
+            pass
 
     def suicide(self):
         self.log.info('quit webdriver.')
         self.driver.quit()
+
 
 class Sushidriver(Webdriver):
     def __init__(self):
@@ -55,14 +75,22 @@ class Sushidriver(Webdriver):
             super().__init__(window_size=(765, 800))
             self.render('http://typingx0.net/sushida/play.html?soundless')
             sushida = self.get_element(type='id', query='#canvas')
-
-            # self.wait(5)
-            self.gomi_kasu_wait(9)
+            self.gomi_kasu_wait(7)
             self.click_point(sushida.location['x'] + 302, sushida.location['y'] + 260)
-            self.gomi_kasu_wait(5)
+            self.gomi_kasu_wait(1)
+            self.click_point(sushida.location['x'] + 250, sushida.location['y'] + 200, sushida)
+            self.gomi_kasu_wait(1)
+            self.push_key('enter', sushida)
+            self.gomi_kasu_wait(3)
+            self.sushida = sushida
         finally:
             self.suicide()
 
+    def solve(self):
+        pass
+
+    def miss(self):
+        pass
 
 
 

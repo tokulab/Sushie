@@ -1,4 +1,5 @@
 from logging import Formatter, getLogger, StreamHandler, DEBUG, handlers
+import math
 
 class Logger():
     def __init__(self, n=__name__):
@@ -14,7 +15,7 @@ class Logger():
 
         handler = handlers.RotatingFileHandler(
             filename='../.sushiLog',
-            maxBytes=2000,
+            maxBytes=math.inf,
             backupCount=5
         )
         handler.setLevel(DEBUG)
