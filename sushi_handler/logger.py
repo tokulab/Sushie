@@ -1,6 +1,7 @@
 from logging import Formatter, getLogger, StreamHandler, DEBUG, handlers
+import math
 
-class Logger:
+class Logger():
     def __init__(self, n=__name__):
         self.logger = getLogger(n)
         self.logger.setLevel(DEBUG)
@@ -13,8 +14,8 @@ class Logger:
         self.logger.addHandler(handler)
 
         handler = handlers.RotatingFileHandler(
-            filename='.SushiLog.log',
-            maxBytes=2000,
+            filename='../.sushiLog',
+            maxBytes=math.inf,
             backupCount=5
         )
         handler.setLevel(DEBUG)
@@ -30,8 +31,8 @@ class Logger:
     def warn(self, msg):
         self.logger.warning(msg)
 
-    def error(self, msg):
-        self.logger.error(msg)
+    def error(self, msg, errmsg):
+        self.logger.error(msg + ' [{}]'.format(errmsg))
 
     def critical(self, msg):
         self.logger.critical(msg)
