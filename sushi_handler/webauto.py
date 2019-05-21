@@ -1,12 +1,20 @@
+import os
 import sys
+import random
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from PIL import Image
-from logger import Logger
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + './sushi_handler/')
+from .logger import Logger
+
 
 class Webdriver():
+    """
+    Sushidriver用API
+    実質seleniumのラッパーライブラリ
+    """
     def __init__(self, window_size):
         self.log = Logger(self.__class__.__name__)
         try:
@@ -26,7 +34,7 @@ class Webdriver():
         self.driver.implicitly_wait(sec)
 
     def gomi_kasu_wait(self, sec):
-        '''クソゴミ　悪手　カスコード　最終手段'''
+        '''なるべくwait()使った方が時間効率が良い'''
         from time import sleep
         sleep(sec)
 
@@ -60,9 +68,22 @@ class Webdriver():
         self.action.perform()
         self.log.info('pushed {} key.'.format(key if word==None else word))
 
-    def screen_shot(self, element, crop=True):
-        if crop:
-            pass
+    def screen_shot(self, element=None, crop=True, name='__rand_mode'):
+        '''
+        elementを撮影する.screenshot()がwebdriverのバージョンによって機能しない
+        chrome以外にする or ウィンドウ全体を撮るのがベター
+        '''
+        if name == '__rand_mode':
+            name = str(random.random()).replace('.', '')
+        temp_shots_folder = os.path.join(os.getcwd(),'sushi_handler', 'temp')
+        os.makedirs(temp_shots_folder, exist_ok=True)
+        if element != None:
+            element.screenshot(filename=os.path.join(temp_shots_folder, name + '.png'))
+            self.log.info('captured screenshot.')
+        self.driver.save_screenshot(filename=os.path.join(temp_shots_folder, name + '.png'))
+        self.log.info('captured screenshot.')
+
+
 
     def suicide(self):
         self.log.info('quit webdriver.')
@@ -70,6 +91,10 @@ class Webdriver():
 
 
 class Sushidriver(Webdriver):
+    """
+    寿司打実行クラス
+    インスタンス化と同時にゲームスタート
+    """
     def __init__(self):
         try:
             super().__init__(window_size=(765, 800))
@@ -82,17 +107,13 @@ class Sushidriver(Webdriver):
             self.gomi_kasu_wait(1)
             self.push_key('enter', sushida)
             self.gomi_kasu_wait(3)
-            self.sushida = sushida
-        finally:
-            self.suicide()
+            self.sushida = sushida  #寿司打のelement(canvas)
+        except Exception as e:
+            sys.stderr.write(str(e))
+            sys.exit(0)
 
     def solve(self):
-        pass
+        self.screen_shot()
 
     def miss(self):
         pass
-
-
-
-if __name__ == '__main__':
-    w = Sushidriver()
