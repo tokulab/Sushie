@@ -7,6 +7,10 @@ from PIL import Image
 from logger import Logger
 
 class Webdriver():
+    """
+    Sushidriver用API
+    実質seleniumのラッパーライブラリ
+    """
     def __init__(self, window_size):
         self.log = Logger(self.__class__.__name__)
         try:
@@ -70,6 +74,10 @@ class Webdriver():
 
 
 class Sushidriver(Webdriver):
+    """
+    寿司打実行クラス
+    インスタンス化と同時にゲームスタート
+    """
     def __init__(self):
         try:
             super().__init__(window_size=(765, 800))
@@ -91,8 +99,3 @@ class Sushidriver(Webdriver):
 
     def miss(self):
         pass
-
-
-
-if __name__ == '__main__':
-    w = Sushidriver()
