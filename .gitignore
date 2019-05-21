@@ -2,6 +2,6 @@
 
 *__pycache__/
 
-*.log
+*.sushiLog
 
 *.idea/
