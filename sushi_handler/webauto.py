@@ -8,6 +8,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from PIL import Image
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + './sushi_handler/')
 from .logger import Logger
+from .sushi_ocr import ImgOcr
 
 
 class Webdriver():
@@ -58,7 +59,7 @@ class Webdriver():
         self.action.perform()
         self.log.info('clicked x:{}, y:{}'.format(x, y))
 
-    def push_key(self, key, element, word=None, delay_mode=False):
+    def push_key(self, key, word=None, delay_mode=False):
         keys_dic = {
             'enter': Keys.ENTER,
             'space': Keys.SPACE,
@@ -77,28 +78,31 @@ class Webdriver():
             name = str(random.random()).replace('.', '')
         temp_shots_folder = os.path.join(os.getcwd(),'sushi_handler', 'temp')
         os.makedirs(temp_shots_folder, exist_ok=True)
+        '''
         if element != None:
             element.screenshot(filename=os.path.join(temp_shots_folder, name + '.png'))
             self.log.info('captured screenshot.')
+        '''
+        fname = os.path.join(temp_shots_folder, name + '.png')
         self.driver.save_screenshot(filename=os.path.join(temp_shots_folder, name + '.png'))
         self.log.info('captured screenshot.')
-
-
+        return fname
 
     def suicide(self):
         self.log.info('quit webdriver.')
         self.driver.quit()
 
 
-class Sushidriver(Webdriver):
+class Sushidriver(Webdriver, ImgOcr):
     """
     寿司打実行クラス
     インスタンス化と同時にゲームスタート
     """
     def __init__(self):
         try:
-            super().__init__(window_size=(765, 800))
-            self.render('http://typingx0.net/sushida/play.html?soundless')
+            Webdriver.__init__(self, window_size=(765, 800))
+            ImgOcr.__init__(self)
+            self.render('http://typingx0.net/sushida/play.html')
             sushida = self.get_element(type='id', query='#canvas')
             self.gomi_kasu_wait(7)
             self.click_point(sushida.location['x'] + 302, sushida.location['y'] + 260)
@@ -113,7 +117,16 @@ class Sushidriver(Webdriver):
             sys.exit(0)
 
     def solve(self):
-        self.screen_shot()
+        fname = self.screen_shot()
+        txt = self.ditect(fname)
+        self.log.info('get text: {}'.format(txt))
+        self.push_key(key='string', word=txt)
 
     def miss(self):
         pass
+
+    def quit(self):
+        import shutil
+        shutil.rmtree(os.path.join(os.getcwd(),'sushi_handler', 'temp'))
+        self.log.info('quitting sushidriver good bye!')
+        sys.exit(0)

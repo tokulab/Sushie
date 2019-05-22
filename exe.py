@@ -1,7 +1,9 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '..')
 from sushi_handler.webauto import Sushidriver
 
 sushi_cheat = Sushidriver()
-sushi_cheat.solve()
+while True:
+    try:
+        '''ctrl+cでKeyboadInterruptを拾って終了'''
+        sushi_cheat.solve()
+    except:
+        sushi_cheat.quit()
