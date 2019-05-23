@@ -14,7 +14,7 @@ class Logger():
         self.logger.addHandler(handler)
 
         handler = handlers.RotatingFileHandler(
-            filename='../.sushiLog',
+            filename='.sushiLog',
             maxBytes=math.inf,
             backupCount=5
         )

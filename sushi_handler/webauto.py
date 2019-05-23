@@ -69,6 +69,16 @@ class Webdriver():
         self.action.perform()
         self.log.info('pushed {} key.'.format(key if word==None else word))
 
+    def type_string_delay(self, word, delay):
+        from time import sleep
+        word_list = list(map(str, list(word)))
+        for char in word_list:
+            self.action.send_keys(char)
+            self.action.perform()
+            sleep(delay)
+        self.log.info('string {} inputed.'.format(word))
+
+
     def screen_shot(self, element=None, crop=True, name='__rand_mode'):
         '''
         elementを撮影する.screenshot()がwebdriverのバージョンによって機能しない
@@ -121,6 +131,12 @@ class Sushidriver(Webdriver, ImgOcr):
         txt = self.ditect(fname)
         self.log.info('get text: {}'.format(txt))
         self.push_key(key='string', word=txt)
+
+    def solve_delay(self, delay=1.0e-2):
+        fname = self.screen_shot()
+        txt = self.ditect(fname)
+        self.log.info('get text: {}'.format(txt))
+        self.type_string_delay(txt, delay)
 
     def miss(self):
         pass
