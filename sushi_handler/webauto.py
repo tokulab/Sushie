@@ -1,11 +1,11 @@
 import os
 import sys
 import random
+import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-from PIL import Image
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + './sushi_handler/')
 from .logger import Logger
 from .sushi_ocr import ImgOcr
@@ -35,7 +35,7 @@ class Webdriver():
         self.driver.implicitly_wait(sec)
 
     def gomi_kasu_wait(self, sec):
-        '''なるべくwait()使った方が時間効率が良い'''
+        '''seleniumでtime.sleep()は悪手'''
         from time import sleep
         sleep(sec)
 
@@ -126,10 +126,19 @@ class Sushidriver(Webdriver, ImgOcr):
             sys.stderr.write(str(e))
             sys.exit(0)
 
-    def solve(self):
+    def __auto_finish_detection_decorator(func):
+        def wrapper(self, *args, **kwargs):
+            exit_judge = self.log.catch_ending()
+            if exit_judge == True:
+                self.quit(save_result=True)
+            func(self, *args, **kwargs)
+        return wrapper
+
+    @__auto_finish_detection_decorator
+    def solve(self, *args, **kwargs):
         fname = self.screen_shot()
         txt = self.ditect(fname)
-        self.log.info('get text: {}'.format(txt))
+        self.log.debug('get text: {}'.format(txt))
         self.push_key(key='string', word=txt)
 
     def solve_delay(self, delay=1.0e-2):
@@ -141,8 +150,12 @@ class Sushidriver(Webdriver, ImgOcr):
     def miss(self):
         pass
 
-    def quit(self):
+    def quit(self, save_result=False):
         import shutil
         shutil.rmtree(os.path.join(os.getcwd(),'sushi_handler', 'temp'))
+        if save_result:
+            safety_char = '_'
+            safety_date = str(datetime.datetime.now()).translate(str.maketrans({' ': safety_char, '.': '_'}))
+            self.screen_shot(name='result'+safety_date)
         self.log.info('quitting sushidriver good bye!')
         sys.exit(0)
