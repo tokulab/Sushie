@@ -134,7 +134,7 @@ class Sushidriver(Webdriver, ImgOcr):
             func(self, *args, **kwargs)
         return wrapper
 
-    @__auto_finish_detection_decorator
+    # @__auto_finish_detection_decorator
     def solve(self, *args, **kwargs):
         fname = self.screen_shot()
         txt = self.ditect(fname)
