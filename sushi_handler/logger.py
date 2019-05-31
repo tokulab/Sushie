@@ -14,8 +14,8 @@ class Logger():
         self.logger.addHandler(handler)
 
         handler = handlers.RotatingFileHandler(
-            filename='../.sushiLog',
-            maxBytes=math.inf,
+            filename='.sushiLog',
+            maxBytes=math.inf, # どのアルファベットで間違えたかの研究のため現状無制限にしてある
             backupCount=5
         )
         handler.setLevel(DEBUG)
@@ -36,3 +36,13 @@ class Logger():
 
     def critical(self, msg):
         self.logger.critical(msg)
+
+    def catch_ending(self):
+        """
+        :return: boolean
+        """
+        with open('.sushiLog', 'r') as log:
+            latest_log = log.readlines()[-1].strip()
+        # リザルト画面のocr結果がコレになるからそこで終わる
+        exit_judge = True if 'HOA-FATH' in latest_log else False
+        return exit_judge
