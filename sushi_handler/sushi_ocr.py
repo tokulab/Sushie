@@ -13,7 +13,7 @@ class ImgOcr():
         self.log = Logger()
         self.tools = pyocr.get_available_tools()
         if len(self.tools) == 0:
-            self.log.error('cant get ocr tools plz check your tesseract programs.')
+            self.log.error('cant get ocr tools plz check your tesseract programs.', 'tesseract Error')
             sys.exit(0)
         else:
             self.tool = self.tools[0]
