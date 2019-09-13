@@ -5,7 +5,7 @@ class Logger():
     def __init__(self, n=__name__):
         self.logger = getLogger(n)
         self.logger.setLevel(DEBUG)
-        formatt = Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatt = Formatter('%(asctime)s %(levelname)s - %(message)s')
 
         #stdout
         handler = StreamHandler()
